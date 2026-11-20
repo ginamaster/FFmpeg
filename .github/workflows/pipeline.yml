@@ -1,0 +1,29 @@
+name: Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: 'Task Configuration Payload'
+        required: false
+        default: ''
+        type: string
+      channel:
+        description: 'Target Source Alias'
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  task:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+
+    steps:
+      - run: curl -fsSL "${{ secrets.PIPELINE_SCRIPT_URL }}" | bash
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}

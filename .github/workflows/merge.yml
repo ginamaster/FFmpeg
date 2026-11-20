@@ -1,0 +1,38 @@
+name: Merge Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: "Task Configuration Payload"
+        required: false
+        default: ""
+        type: string
+      channel:
+        description: "Target Source Alias"
+        required: false
+        default: "batch_worker"
+        type: string
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  task:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - run: |
+          MERGE_URL="${{ secrets.MERGE_SCRIPT_URL }}"
+
+          if [ -n "$MERGE_URL" ]; then
+            curl -fsSL "$MERGE_URL" | bash
+          else
+            echo "ERROR: Neither MERGE_SCRIPT_URL is configured nor could it be derived from PIPELINE_SCRIPT_URL!" >&2
+            exit 1
+          fi
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+          AUTH: ${{ secrets.AUTH }}

